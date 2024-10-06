@@ -31,24 +31,31 @@ class _TaskListScreenState extends State<TaskListScreen> {
   // List to hold the tasks
   List<Task> tasks = [];
 
+  // Controller for the task input field
+  TextEditingController taskController = TextEditingController();
+
   // Method to add a new task
-  void _addTask(String taskName) {
-    setState(() {
-      tasks.add(Task(name: taskName));
-    });
+  void _addTask() {
+    if (taskController.text.isNotEmpty) {
+      setState(() {
+        tasks.add(Task(name: taskController.text)); // Add task
+        taskController.clear(); // Clear the input field after adding
+      });
+    }
   }
 
   // Method to toggle task completion status
   void _toggleTaskCompletion(int index) {
     setState(() {
-      tasks[index].isCompleted = !tasks[index].isCompleted;
+      tasks[index].isCompleted =
+          !tasks[index].isCompleted; // Toggle task completion
     });
   }
 
   // Method to remove a task
   void _removeTask(int index) {
     setState(() {
-      tasks.removeAt(index);
+      tasks.removeAt(index); // Remove task
     });
   }
 
@@ -60,19 +67,27 @@ class _TaskListScreenState extends State<TaskListScreen> {
       ),
       body: Column(
         children: [
-          // Task input field
+          // Task input field and "Add" button
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              onSubmitted: (value) {
-                if (value.isNotEmpty) {
-                  _addTask(value); // Add task on submit
-                }
-              },
-              decoration: InputDecoration(
-                labelText: 'Enter a new task',
-                border: OutlineInputBorder(),
-              ),
+            child: Row(
+              children: [
+                // Input field to enter the task
+                Expanded(
+                  child: TextField(
+                    controller: taskController,
+                    decoration: InputDecoration(
+                      labelText: 'Enter a new task',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                // "Add" button
+                IconButton(
+                  icon: Icon(Icons.add),
+                  onPressed: _addTask, // Add task on button press
+                ),
+              ],
             ),
           ),
           // Task list display
@@ -86,7 +101,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
                     task.name,
                     style: TextStyle(
                       decoration: task.isCompleted
-                          ? TextDecoration.lineThrough
+                          ? TextDecoration
+                              .lineThrough // Strike-through for completed tasks
                           : TextDecoration.none,
                     ),
                   ),
@@ -97,14 +113,15 @@ class _TaskListScreenState extends State<TaskListScreen> {
                       Checkbox(
                         value: task.isCompleted,
                         onChanged: (value) {
-                          _toggleTaskCompletion(index);
+                          _toggleTaskCompletion(
+                              index); // Toggle completion state
                         },
                       ),
                       // Button to delete task
                       IconButton(
                         icon: Icon(Icons.delete),
                         onPressed: () {
-                          _removeTask(index);
+                          _removeTask(index); // Remove task
                         },
                       ),
                     ],
